@@ -11,6 +11,7 @@
   "dependencies": {
     "@ai-sdk/openai": "^3.0.41",
     "@ai-sdk/react": "^3.0.118",
+    "@eslint/eslintrc": "^3.3.5",
     "ai": "^6.0.116",
     "next": "^15.5.14",
     "react": "19.2.4",

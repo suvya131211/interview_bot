@@ -28,7 +28,7 @@ export default function Home() {
     () =>
       new DefaultChatTransport({
         api: "/api/chat",
-        body: { sessionCode },
+        headers: { "x-session-code": sessionCode || "" },
       }),
     [sessionCode]
   );

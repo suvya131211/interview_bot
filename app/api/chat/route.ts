@@ -13,13 +13,13 @@ import { validateSessionCode } from "@/lib/auth";
 export const runtime = "edge";
 
 export async function POST(req: Request) {
-  const { messages, sessionCode }: { messages: UIMessage[]; sessionCode: string } =
-    await req.json();
-
+  const sessionCode = req.headers.get("x-session-code") || "";
   const auth = await validateSessionCode(sessionCode);
   if (!auth.valid) {
     return Response.json({ error: auth.reason || "Unauthorized" }, { status: 401 });
   }
+
+  const { messages }: { messages: UIMessage[] } = await req.json();
 
   return createUIMessageStreamResponse({
     stream: createUIMessageStream({

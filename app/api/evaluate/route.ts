@@ -12,7 +12,8 @@ const evalSchema = z.object({
 });
 
 export async function POST(req: Request) {
-  const { userMessage, conversationContext, sessionCode } = await req.json();
+  const { userMessage, conversationContext, sessionCode: bodyCode } = await req.json();
+  const sessionCode = req.headers.get("x-session-code") || bodyCode || "";
 
   const auth = await validateSessionCode(sessionCode);
   if (!auth.valid) {

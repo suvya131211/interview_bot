@@ -14,7 +14,7 @@ import { MAX_MOVES } from "@/lib/constants";
 import { INITIAL_MESSAGE } from "@/lib/system-prompt";
 
 export default function Home() {
-  const [sessionCode, setSessionCode] = useState<string | null>(null);
+  const [sessionToken, setSessionToken] = useState<string | null>(null);
   const [moves, setMoves] = useState(0);
   const [input, setInput] = useState("");
   const [key, setKey] = useState(0);
@@ -24,13 +24,24 @@ export default function Home() {
   const [pasteToast, setPasteToast] = useState(false);
   const pasteToastTimer = useRef<NodeJS.Timeout | null>(null);
 
+  // Custom fetch that injects session token header
+  const authedFetch = useMemo(() => {
+    return (url: string | URL | Request, init?: RequestInit) => {
+      const headers = new Headers(init?.headers);
+      if (sessionToken) {
+        headers.set("x-session-code", sessionToken);
+      }
+      return fetch(url, { ...init, headers });
+    };
+  }, [sessionToken]);
+
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
         api: "/api/chat",
-        headers: { "x-session-code": sessionCode || "" },
+        fetch: authedFetch,
       }),
-    [sessionCode]
+    [authedFetch]
   );
 
   const { messages, sendMessage, status, setMessages } = useChat({
@@ -48,7 +59,6 @@ export default function Home() {
   const isLoading = status === "streaming" || status === "submitted";
   const gameOver = moves >= MAX_MOVES;
 
-  // Convert UIMessage format for display
   const displayMessages = messages.map((msg) => ({
     id: msg.id,
     role: msg.role as "user" | "assistant",
@@ -58,50 +68,34 @@ export default function Home() {
       .join(""),
   }));
 
-  // Build conversation context for evaluator
   const buildContext = useCallback(() => {
     return displayMessages
       .map((m) => `${m.role === "user" ? "PM" : "Analyst"}: ${m.content}`)
       .join("\n");
   }, [displayMessages]);
 
-  // Evaluate a user message in the background
   const evaluateMessage = useCallback(
     async (userMessage: string, moveNumber: number) => {
       setEvaluations((prev) => [
         ...prev,
-        {
-          moveNumber,
-          userMessage,
-          score: null,
-          feedback: "",
-          aiWarning: false,
-          loading: true,
-        },
+        { moveNumber, userMessage, score: null, feedback: "", aiWarning: false, loading: true },
       ]);
 
       try {
         const res = await fetch("/api/evaluate", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userMessage,
-            conversationContext: buildContext(),
-            sessionCode,
-          }),
+          headers: {
+            "Content-Type": "application/json",
+            "x-session-code": sessionToken || "",
+          },
+          body: JSON.stringify({ userMessage, conversationContext: buildContext() }),
         });
         const data = await res.json();
 
         setEvaluations((prev) =>
           prev.map((ev) =>
             ev.moveNumber === moveNumber
-              ? {
-                  ...ev,
-                  score: data.score,
-                  feedback: data.feedback,
-                  aiWarning: data.aiGenerated,
-                  loading: false,
-                }
+              ? { ...ev, score: data.score, feedback: data.feedback, aiWarning: data.aiGenerated, loading: false }
               : ev
           )
         );
@@ -109,19 +103,13 @@ export default function Home() {
         setEvaluations((prev) =>
           prev.map((ev) =>
             ev.moveNumber === moveNumber
-              ? {
-                  ...ev,
-                  score: null,
-                  feedback: "Evaluation failed",
-                  aiWarning: false,
-                  loading: false,
-                }
+              ? { ...ev, score: null, feedback: "Evaluation failed", aiWarning: false, loading: false }
               : ev
           )
         );
       }
     },
-    [buildContext, sessionCode]
+    [buildContext, sessionToken]
   );
 
   const onSubmit = useCallback(
@@ -139,17 +127,12 @@ export default function Home() {
   );
 
   const onReset = useCallback(() => {
-    // End session — clear the code so user goes back to gate
-    setSessionCode(null);
+    setSessionToken(null);
     setMoves(0);
     setInput("");
     setEvaluations([]);
     setMessages([
-      {
-        id: "greeting",
-        role: "assistant",
-        parts: [{ type: "text", text: INITIAL_MESSAGE }],
-      },
+      { id: "greeting", role: "assistant", parts: [{ type: "text", text: INITIAL_MESSAGE }] },
     ]);
     setKey((prev) => prev + 1);
   }, [setMessages]);
@@ -165,20 +148,17 @@ export default function Home() {
     pasteToastTimer.current = setTimeout(() => setPasteToast(false), 2500);
   }, []);
 
-  // Show access gate if no valid session
-  if (!sessionCode) {
-    return <AccessGate onAuthenticated={(code) => setSessionCode(code)} />;
+  if (!sessionToken) {
+    return <AccessGate onAuthenticated={(token) => setSessionToken(token)} />;
   }
 
   return (
     <div className="flex flex-col h-screen bg-zinc-950 text-white">
       <ProctorOverlay onTabSwitch={onTabSwitch} />
-
       <Header onReset={onReset} />
       <MoveCounter moves={moves} />
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Chat area */}
         <div className="flex flex-col flex-1 min-w-0">
           <ChatWindow messages={displayMessages} isLoading={isLoading} />
           <ChatInput
@@ -190,16 +170,9 @@ export default function Home() {
             onPasteAttempt={onPasteAttempt}
           />
         </div>
-
-        {/* Evaluation sidebar */}
-        <EvalSidebar
-          evaluations={evaluations}
-          tabSwitches={tabSwitches}
-          pasteAttempts={pasteAttempts}
-        />
+        <EvalSidebar evaluations={evaluations} tabSwitches={tabSwitches} pasteAttempts={pasteAttempts} />
       </div>
 
-      {/* Paste blocked toast */}
       {pasteToast && (
         <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 px-4 py-2 bg-red-500/90 text-white text-sm rounded-lg shadow-lg animate-fade-in">
           Paste is disabled — please type your answer

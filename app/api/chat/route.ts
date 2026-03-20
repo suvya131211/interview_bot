@@ -8,11 +8,18 @@ import {
 } from "ai";
 import { SYSTEM_PROMPT } from "@/lib/system-prompt";
 import { MODEL_ID } from "@/lib/constants";
+import { validateSessionCode } from "@/lib/auth";
 
 export const runtime = "edge";
 
 export async function POST(req: Request) {
-  const { messages }: { messages: UIMessage[] } = await req.json();
+  const { messages, sessionCode }: { messages: UIMessage[]; sessionCode: string } =
+    await req.json();
+
+  const auth = await validateSessionCode(sessionCode);
+  if (!auth.valid) {
+    return Response.json({ error: auth.reason || "Unauthorized" }, { status: 401 });
+  }
 
   return createUIMessageStreamResponse({
     stream: createUIMessageStream({

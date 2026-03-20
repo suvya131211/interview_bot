@@ -1,17 +1,20 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { useState, useCallback, useRef } from "react";
+import { DefaultChatTransport } from "ai";
+import { useState, useCallback, useRef, useMemo } from "react";
 import Header from "@/components/Header";
 import MoveCounter from "@/components/MoveCounter";
 import ChatWindow from "@/components/ChatWindow";
 import ChatInput from "@/components/ChatInput";
 import EvalSidebar, { Evaluation } from "@/components/EvalSidebar";
 import ProctorOverlay from "@/components/ProctorOverlay";
+import AccessGate from "@/components/AccessGate";
 import { MAX_MOVES } from "@/lib/constants";
 import { INITIAL_MESSAGE } from "@/lib/system-prompt";
 
 export default function Home() {
+  const [sessionCode, setSessionCode] = useState<string | null>(null);
   const [moves, setMoves] = useState(0);
   const [input, setInput] = useState("");
   const [key, setKey] = useState(0);
@@ -21,8 +24,18 @@ export default function Home() {
   const [pasteToast, setPasteToast] = useState(false);
   const pasteToastTimer = useRef<NodeJS.Timeout | null>(null);
 
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport({
+        api: "/api/chat",
+        body: { sessionCode },
+      }),
+    [sessionCode]
+  );
+
   const { messages, sendMessage, status, setMessages } = useChat({
     id: `chat-${key}`,
+    transport,
     messages: [
       {
         id: "greeting",
@@ -55,7 +68,6 @@ export default function Home() {
   // Evaluate a user message in the background
   const evaluateMessage = useCallback(
     async (userMessage: string, moveNumber: number) => {
-      // Add placeholder
       setEvaluations((prev) => [
         ...prev,
         {
@@ -75,6 +87,7 @@ export default function Home() {
           body: JSON.stringify({
             userMessage,
             conversationContext: buildContext(),
+            sessionCode,
           }),
         });
         const data = await res.json();
@@ -108,7 +121,7 @@ export default function Home() {
         );
       }
     },
-    [buildContext]
+    [buildContext, sessionCode]
   );
 
   const onSubmit = useCallback(
@@ -126,6 +139,8 @@ export default function Home() {
   );
 
   const onReset = useCallback(() => {
+    // End session — clear the code so user goes back to gate
+    setSessionCode(null);
     setMoves(0);
     setInput("");
     setEvaluations([]);
@@ -149,6 +164,11 @@ export default function Home() {
     if (pasteToastTimer.current) clearTimeout(pasteToastTimer.current);
     pasteToastTimer.current = setTimeout(() => setPasteToast(false), 2500);
   }, []);
+
+  // Show access gate if no valid session
+  if (!sessionCode) {
+    return <AccessGate onAuthenticated={(code) => setSessionCode(code)} />;
+  }
 
   return (
     <div className="flex flex-col h-screen bg-zinc-950 text-white">

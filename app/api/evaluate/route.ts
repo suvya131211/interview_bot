@@ -1,6 +1,7 @@
 import { openai } from "@ai-sdk/openai";
 import { generateObject } from "ai";
 import { z } from "zod";
+import { validateSessionCode } from "@/lib/auth";
 
 export const runtime = "edge";
 
@@ -11,7 +12,12 @@ const evalSchema = z.object({
 });
 
 export async function POST(req: Request) {
-  const { userMessage, conversationContext } = await req.json();
+  const { userMessage, conversationContext, sessionCode } = await req.json();
+
+  const auth = await validateSessionCode(sessionCode);
+  if (!auth.valid) {
+    return Response.json({ error: auth.reason || "Unauthorized" }, { status: 401 });
+  }
 
   const result = await generateObject({
     model: openai("gpt-4o-mini"),

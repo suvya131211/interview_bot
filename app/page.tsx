@@ -24,24 +24,19 @@ export default function Home() {
   const [pasteToast, setPasteToast] = useState(false);
   const pasteToastTimer = useRef<NodeJS.Timeout | null>(null);
 
-  // Custom fetch that injects session token header
-  const authedFetch = useMemo(() => {
-    return (url: string | URL | Request, init?: RequestInit) => {
-      const headers = new Headers(init?.headers);
-      if (sessionToken) {
-        headers.set("x-session-code", sessionToken);
-      }
-      return fetch(url, { ...init, headers });
-    };
-  }, [sessionToken]);
+  const sessionTokenRef = useRef(sessionToken);
+  sessionTokenRef.current = sessionToken;
 
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
         api: "/api/chat",
-        fetch: authedFetch,
+        headers: async () => ({
+          "x-session-code": sessionTokenRef.current || "",
+        }),
       }),
-    [authedFetch]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [key]
   );
 
   const { messages, sendMessage, status, setMessages } = useChat({

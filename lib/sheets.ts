@@ -12,7 +12,8 @@ export async function getCandidates(): Promise<Candidate[]> {
     throw new Error("Google Sheets not configured");
   }
 
-  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}!A:B?key=${API_KEY}`;
+  const range = encodeURIComponent(`${SHEET_NAME}!A:B`);
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?key=${API_KEY}`;
 
   const res = await fetch(url, { next: { revalidate: 30 } });
 

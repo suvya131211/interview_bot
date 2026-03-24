@@ -60,29 +60,29 @@ export default function AccessGate({ onAuthenticated }: AccessGateProps) {
 
         {/* Instructions */}
         <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 mb-6">
-          <h2 className="text-sm font-semibold text-white mb-3">Before you begin</h2>
-          <ul className="space-y-2 text-sm text-zinc-400">
-            <li className="flex gap-2">
-              <span className="text-orange-400 shrink-0">1.</span>
-              This test has <span className="text-white font-medium">{CASE_STUDIES.length} case studies</span>. You will complete them one after another.
+          <h2 className="text-sm font-semibold text-white mb-4">Before you begin</h2>
+          <ol className="space-y-3 text-[13px] leading-relaxed text-zinc-400 list-none m-0 p-0">
+            <li className="flex items-start gap-3">
+              <span className="text-orange-400 font-semibold shrink-0 w-5 text-right">1.</span>
+              <span>This test has <span className="text-white font-medium">{CASE_STUDIES.length} case studies</span>. You will complete them one after another.</span>
             </li>
-            <li className="flex gap-2">
-              <span className="text-orange-400 shrink-0">2.</span>
-              In each case, you play the <span className="text-white font-medium">Product Manager</span>. An AI analyst will respond to your questions with data.
+            <li className="flex items-start gap-3">
+              <span className="text-orange-400 font-semibold shrink-0 w-5 text-right">2.</span>
+              <span>In each case, you play the <span className="text-white font-medium">Product Manager</span>. An AI analyst will respond to your questions with data.</span>
             </li>
-            <li className="flex gap-2">
-              <span className="text-orange-400 shrink-0">3.</span>
-              You have a <span className="text-white font-medium">limited number of moves</span> per case. Use them wisely to investigate and find the root cause.
+            <li className="flex items-start gap-3">
+              <span className="text-orange-400 font-semibold shrink-0 w-5 text-right">3.</span>
+              <span>You have a <span className="text-white font-medium">limited number of moves</span> per case. Use them wisely to investigate and find the root cause.</span>
             </li>
-            <li className="flex gap-2">
-              <span className="text-orange-400 shrink-0">4.</span>
-              When ready, click <span className="text-white font-medium">&quot;Submit Final Answer&quot;</span> to record your analysis and move to the next case.
+            <li className="flex items-start gap-3">
+              <span className="text-orange-400 font-semibold shrink-0 w-5 text-right">4.</span>
+              <span>When ready, click <span className="text-white font-medium">&quot;Submit Final Answer&quot;</span> to record your analysis and move to the next case.</span>
             </li>
-            <li className="flex gap-2">
-              <span className="text-orange-400 shrink-0">5.</span>
-              <span className="text-red-400">Copy-paste is disabled</span> and <span className="text-red-400">tab switches are tracked</span>. Please work independently.
+            <li className="flex items-start gap-3">
+              <span className="text-orange-400 font-semibold shrink-0 w-5 text-right">5.</span>
+              <span><span className="text-red-400">Copy-paste is disabled</span> and <span className="text-red-400">tab switches are tracked</span>. Please work independently.</span>
             </li>
-          </ul>
+          </ol>
         </div>
 
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">

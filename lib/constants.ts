@@ -1,3 +1,2 @@
-export const MAX_MOVES = 15;
-export const MODEL_ID = "gpt-4o";
-export const APP_TITLE = "Swiggy PM Case Study";
+export const CHAT_DEPLOYMENT = "gpt-4o-mini";
+export const EVAL_DEPLOYMENT = "gpt-4o-mini";

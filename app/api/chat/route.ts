@@ -1,4 +1,4 @@
-import { openai } from "@ai-sdk/openai";
+import { createAzure } from "@ai-sdk/azure";
 import {
   streamText,
   UIMessage,
@@ -6,11 +6,16 @@ import {
   createUIMessageStream,
   convertToModelMessages,
 } from "ai";
-import { SYSTEM_PROMPT } from "@/lib/system-prompt";
-import { MODEL_ID } from "@/lib/constants";
+import { CASE_STUDIES } from "@/lib/case-studies";
+import { CHAT_DEPLOYMENT } from "@/lib/constants";
 import { validateSessionCode } from "@/lib/auth";
 
 export const runtime = "edge";
+
+const azure = createAzure({
+  resourceName: process.env.AZURE_RESOURCE_NAME,
+  apiKey: process.env.AZURE_API_KEY,
+});
 
 export async function POST(req: Request) {
   const sessionCode = req.headers.get("x-session-code") || "";
@@ -19,14 +24,17 @@ export async function POST(req: Request) {
     return Response.json({ error: auth.reason || "Unauthorized" }, { status: 401 });
   }
 
+  const caseIndex = parseInt(req.headers.get("x-case-study") || "0", 10);
+  const caseStudy = CASE_STUDIES[caseIndex] || CASE_STUDIES[0];
+
   const { messages }: { messages: UIMessage[] } = await req.json();
 
   return createUIMessageStreamResponse({
     stream: createUIMessageStream({
       execute: async ({ writer }) => {
         const result = streamText({
-          model: openai(MODEL_ID),
-          system: SYSTEM_PROMPT,
+          model: azure(CHAT_DEPLOYMENT),
+          system: caseStudy.systemPrompt,
           messages: await convertToModelMessages(messages),
         });
 

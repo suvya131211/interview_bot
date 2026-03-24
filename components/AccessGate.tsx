@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import { CASE_STUDIES } from "@/lib/case-studies";
 
 interface AccessGateProps {
-  onAuthenticated: (token: string) => void;
+  onAuthenticated: (token: string, username: string) => void;
 }
 
 export default function AccessGate({ onAuthenticated }: AccessGateProps) {
@@ -31,7 +32,7 @@ export default function AccessGate({ onAuthenticated }: AccessGateProps) {
       const data = await res.json();
 
       if (data.valid && data.sessionToken) {
-        onAuthenticated(data.sessionToken);
+        onAuthenticated(data.sessionToken, username.trim());
       } else {
         setError(data.reason || "Invalid credentials");
       }
@@ -44,17 +45,44 @@ export default function AccessGate({ onAuthenticated }: AccessGateProps) {
 
   return (
     <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-xl">
         <div className="text-center mb-8">
           <div className="w-14 h-14 rounded-xl bg-orange-500 flex items-center justify-center font-bold text-white text-2xl mx-auto mb-4">
-            S
+            PM
           </div>
           <h1 className="text-2xl font-semibold text-white">
-            Swiggy PM Case Study
+            PM Case Study Interview
           </h1>
           <p className="text-sm text-zinc-500 mt-2">
-            Enter your credentials to begin the interview
+            Enter your credentials to begin the test
           </p>
+        </div>
+
+        {/* Instructions */}
+        <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 mb-6">
+          <h2 className="text-sm font-semibold text-white mb-3">Before you begin</h2>
+          <ul className="space-y-2 text-sm text-zinc-400">
+            <li className="flex gap-2">
+              <span className="text-orange-400 shrink-0">1.</span>
+              This test has <span className="text-white font-medium">{CASE_STUDIES.length} case studies</span>. You will complete them one after another.
+            </li>
+            <li className="flex gap-2">
+              <span className="text-orange-400 shrink-0">2.</span>
+              In each case, you play the <span className="text-white font-medium">Product Manager</span>. An AI analyst will respond to your questions with data.
+            </li>
+            <li className="flex gap-2">
+              <span className="text-orange-400 shrink-0">3.</span>
+              You have a <span className="text-white font-medium">limited number of moves</span> per case. Use them wisely to investigate and find the root cause.
+            </li>
+            <li className="flex gap-2">
+              <span className="text-orange-400 shrink-0">4.</span>
+              When ready, click <span className="text-white font-medium">&quot;Submit Final Answer&quot;</span> to record your analysis and move to the next case.
+            </li>
+            <li className="flex gap-2">
+              <span className="text-orange-400 shrink-0">5.</span>
+              <span className="text-red-400">Copy-paste is disabled</span> and <span className="text-red-400">tab switches are tracked</span>. Please work independently.
+            </li>
+          </ul>
         </div>
 
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">

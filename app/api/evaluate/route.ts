@@ -1,9 +1,16 @@
-import { openai } from "@ai-sdk/openai";
+import { createAzure } from "@ai-sdk/azure";
 import { generateObject } from "ai";
 import { z } from "zod";
 import { validateSessionCode } from "@/lib/auth";
+import { CASE_STUDIES } from "@/lib/case-studies";
+import { EVAL_DEPLOYMENT } from "@/lib/constants";
 
 export const runtime = "edge";
+
+const azure = createAzure({
+  resourceName: process.env.AZURE_RESOURCE_NAME,
+  apiKey: process.env.AZURE_API_KEY,
+});
 
 const evalSchema = z.object({
   score: z.number().min(0).max(10).describe("Score from 0-10 for the PM question quality"),
@@ -19,18 +26,21 @@ export async function POST(req: Request) {
     return Response.json({ error: auth.reason || "Unauthorized" }, { status: 401 });
   }
 
-  const { userMessage, conversationContext } = await req.json();
+  const { userMessage, conversationContext, caseStudyIndex } = await req.json();
+
+  const caseIndex = typeof caseStudyIndex === "number" ? caseStudyIndex : 0;
+  const caseStudy = CASE_STUDIES[caseIndex] || CASE_STUDIES[0];
 
   const result = await generateObject({
-    model: openai("gpt-4o-mini"),
+    model: azure(EVAL_DEPLOYMENT),
     schema: evalSchema,
     prompt: `You are evaluating a Product Manager candidate in a case study interview.
 
-The scenario: Swiggy orders dropped 12% in 2 weeks. The candidate is asking a junior data analyst questions to investigate the root cause.
+The scenario: ${caseStudy.evalScenario}
 
 A good PM candidate should:
 - Ask specific, structured questions (not vague ones)
-- Break down the problem systematically (traffic vs conversion, city-level, funnel steps)
+- Break down the problem systematically
 - Follow up on signals rather than asking random questions
 - Use data to narrow down the root cause
 - Not ask the analyst to do their thinking for them

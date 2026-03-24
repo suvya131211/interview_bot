@@ -1,14 +1,13 @@
 "use client";
 
-import { MAX_MOVES } from "@/lib/constants";
-
 interface MoveCounterProps {
   moves: number;
+  maxMoves: number;
 }
 
-export default function MoveCounter({ moves }: MoveCounterProps) {
-  const remaining = MAX_MOVES - moves;
-  const percentage = (moves / MAX_MOVES) * 100;
+export default function MoveCounter({ moves, maxMoves }: MoveCounterProps) {
+  const remaining = maxMoves - moves;
+  const percentage = (moves / maxMoves) * 100;
 
   let color = "bg-green-500";
   if (remaining <= 3) color = "bg-red-500";
@@ -18,7 +17,7 @@ export default function MoveCounter({ moves }: MoveCounterProps) {
     <div className="px-6 py-3 border-b border-zinc-800 bg-zinc-900/50">
       <div className="flex items-center justify-between mb-1.5">
         <span className="text-xs text-zinc-400">
-          Move {moves} of {MAX_MOVES}
+          Move {moves} of {maxMoves}
         </span>
         <span className="text-xs text-zinc-500">
           {remaining} remaining

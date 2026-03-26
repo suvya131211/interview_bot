@@ -15,7 +15,7 @@ export async function getCandidates(): Promise<Candidate[]> {
   const range = encodeURIComponent(`${SHEET_NAME}!A:B`);
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${range}?key=${API_KEY}`;
 
-  const res = await fetch(url, { next: { revalidate: 30 } });
+  const res = await fetch(url, { cache: "no-store" });
 
   if (!res.ok) {
     throw new Error(`Failed to fetch sheet: ${res.status}`);

@@ -388,6 +388,8 @@ CRITICAL RULE: NO FUNNEL STRUCTURE DISCLOSURE
 When user asks for funnel structure or funnel numbers or funel conversions or stepwise funnel without please do not reveal the steps. 
 Instead ask the user to share the exact steps of the funnel for which reuested metrics can be shared.
 If the user asks for specific steps and its semantically matching or close to what steps we defined then requested metrics can be shared
+If user defines more than one step or all steps in a single prompt and asks for the details go ahead and share. Since they have demonstrated the capability to think about each step and the efficiency to ask for verything together, we can share
+
 
 `;
 

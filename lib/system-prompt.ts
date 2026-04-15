@@ -43,7 +43,7 @@ Time periods:
 - After = last 2 weeks
 
 Overall:
-- Sessions: Before 500,000 → After 495,000
+- Sessions (App Opened Users): Before 500,000 → After 495,000
 - Completed orders: Before 100,000 → After 88,000
 - Overall completed-order conversion: Before 20.0% → After 17.8%
 
@@ -132,7 +132,7 @@ Each step has before/after numbers. Do not give this away. User should reach thi
 
 FUNNEL DATA:
 
-BANGALORE BEFORE (Sessions = 200,000, Completed Orders = 40,000, Cancellation = 4.8%):
+BANGALORE BEFORE (Sessions (App Opened Users) = 200,000, Completed Orders = 40,000, Cancellation = 4.8%):
 | Step | Rate | Count |
 | Viewed restaurant | 82% | 164,000 |
 | Add to cart | 34% | 55,760 |
@@ -140,7 +140,7 @@ BANGALORE BEFORE (Sessions = 200,000, Completed Orders = 40,000, Cancellation = 
 | Payment page | 97% | 43,270 |
 | Payment success | 98% | 42,405 |
 
-BANGALORE AFTER (Sessions = 198,000, Completed Orders = 28,000, Cancellation = 6.8%):
+BANGALORE AFTER (Sessions (App Opened Users) = 198,000, Completed Orders = 28,000, Cancellation = 6.8%):
 | Step | Rate | Count |
 | Viewed restaurant | 60% | 118,800 |
 | Add to cart | 32% | 38,016 |
@@ -148,7 +148,7 @@ BANGALORE AFTER (Sessions = 198,000, Completed Orders = 28,000, Cancellation = 6
 | Payment page | 96% | 28,466 |
 | Payment success | 97% | 27,612 |
 
-HYDERABAD BEFORE (Sessions = 150,000, Orders = 30,000, Cancellation = 4.5%):
+HYDERABAD BEFORE (Sessions (App Opened Users) = 150,000, Orders = 30,000, Cancellation = 4.5%):
 | Step | Rate | Count |
 | Viewed restaurant | 80% | 120,000 |
 | Add to cart | 32% | 38,400 |
@@ -156,7 +156,7 @@ HYDERABAD BEFORE (Sessions = 150,000, Orders = 30,000, Cancellation = 4.5%):
 | Payment page | 97% | 29,798 |
 | Payment success | 97% | 28,904 |
 
-HYDERABAD AFTER (Sessions = 148,000, Orders = 29,500, Cancellation = 4.6%):
+HYDERABAD AFTER (Sessions (App Opened Users) = 148,000, Orders = 29,500, Cancellation = 4.6%):
 | Step | Rate | Count |
 | Viewed restaurant | 80% | 118,400 |
 | Add to cart | 32% | 37,888 |
@@ -164,7 +164,7 @@ HYDERABAD AFTER (Sessions = 148,000, Orders = 29,500, Cancellation = 4.6%):
 | Payment page | 97% | 29,400 |
 | Payment success | 97% | 28,518 |
 
-CHENNAI BEFORE (Sessions = 150,000, Orders = 30,000, Cancellation = 4.7%):
+CHENNAI BEFORE (Sessions (App Opened Users) = 150,000, Orders = 30,000, Cancellation = 4.7%):
 | Step | Rate | Count |
 | Viewed restaurant | 80% | 120,000 |
 | Add to cart | 32% | 38,400 |
@@ -172,7 +172,7 @@ CHENNAI BEFORE (Sessions = 150,000, Orders = 30,000, Cancellation = 4.7%):
 | Payment page | 97% | 29,798 |
 | Payment success | 97% | 28,904 |
 
-CHENNAI AFTER (Sessions = 149,000, Orders = 30,500, Cancellation = 4.8%):
+CHENNAI AFTER (Sessions (App Opened Users) = 149,000, Orders = 30,500, Cancellation = 4.8%):
 | Step | Rate | Count |
 | Viewed restaurant | 80% | 119,200 |
 | Add to cart | 32% | 38,144 |
@@ -384,12 +384,13 @@ You must NOT suggest metrics or directions.
 
 ==================================================
 CRITICAL RULE: NO FUNNEL STRUCTURE DISCLOSURE
-=============================================
+==================================================
 When user asks for funnel structure or funnel numbers or funel conversions or stepwise funnel without please do not reveal the steps. 
 Instead ask the user to share the exact steps of the funnel for which reuested metrics can be shared.
 If the user asks for specific steps and its semantically matching or close to what steps we defined then requested metrics can be shared
 If user defines more than one step or all steps in a single prompt and asks for the details go ahead and share. Since they have demonstrated the capability to think about each step and the efficiency to ask for verything together, we can share
-
+Critical Rule: When user specifically defines multiple or all steps in the funnel and asks for all of the data, please don't block. Do share. This rule overrides the rule of sharing one metric at a time, provided user has defined/asked the steps.
+==================================================
 
 `;
 
